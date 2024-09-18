@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>剪刀石頭布遊戲</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px; /* 設置按鈕之間的間距 */
+        }
+
+        .button-container img {
+            width: 100px;
+            height: 100px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .button-container img:hover {
+            transform: scale(1.1); /* 放大圖片 */
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .score {
+            margin-top: 10px;
+            font-size: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .win {
+            color: green;
+        }
+
+        .lose {
+            color: red;
+        }
+
+        .draw {
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <h1>剪刀石頭布遊戲</h1>
+
+    <div class="button-container">
+        <img src="imgs/scissors.png" alt="剪刀" onclick="playGame('剪刀')">
+        <img src="imgs/rock.png" alt="石頭" onclick="playGame('石頭')">
+        <img src="imgs/paper.png" alt="布" onclick="playGame('布')">
+    </div>
+
+    <div class="result" id="result"></div>
+    <div class="score" id="score">你: 0 - 電腦: 0</div>
+
+    <audio id="winSound" src="audio/win.mp3"></audio>
+    <audio id="loseSound" src="audio/lose.mp3"></audio>
+    <audio id="drawSound" src="audio/draw.mp3"></audio>
+
+    <script>
+        let playerScore = 0;
+        let computerScore = 0;
+
+        // 電腦隨機選擇
+        function computerChoice() {
+            const choices = ['剪刀', '石頭', '布'];
+            const randomIndex = Math.floor(Math.random() * 3);
+            return choices[randomIndex];
+        }
+
+        // 判斷輸贏
+        function determineWinner(player, computer) {
+            if (player === computer) {
+                return 'draw';
+            }
+            if ((player === '剪刀' && computer === '布') ||
+                (player === '石頭' && computer === '剪刀') ||
+                (player === '布' && computer === '石頭')) {
+                return 'win';
+            } else {
+                return 'lose';
+            }
+        }
+
+        // 更新分數並顯示結果
+        function updateScore(result) {
+            const resultDiv = document.getElementById('result');
+            const scoreDiv = document.getElementById('score');
+            const winSound = document.getElementById('winSound');
+            const loseSound = document.getElementById('loseSound');
+            const drawSound = document.getElementById('drawSound');
+
+            if (result === 'win') {
+                playerScore++;
+                winSound.play();
+                resultDiv.textContent = '你贏了！';
+            } else if (result === 'lose') {
+                computerScore++;
+                loseSound.play();
+                resultDiv.textContent = '你輸了！';
+            } else {
+                drawSound.play();
+                resultDiv.textContent = '平手！';
+            }
+
+            scoreDiv.textContent = `你: ${playerScore} - 電腦: ${computerScore}`;
+
+            // 檢查是否有人達到3勝
+            if (playerScore === 3 || computerScore === 3) {
+                let winner = playerScore === 3 ? '你' : '電腦';
+                Swal.fire({
+                    title: `${winner} 取得三勝！`,
+                    text: '遊戲結束，是否重新開始？',
+                    icon: 'success',
+                    showCancelButton: true,
+                    confirmButtonText: '重新開始',
+                    cancelButtonText: '取消'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        resetGame();
+                    }
+                });
+            }
+        }
+
+        // 遊戲邏輯
+        function playGame(playerChoice) {
+            const computerPick = computerChoice();
+            const result = determineWinner(playerChoice, computerPick);
+
+            updateScore(result);
+        }
+
+        // 重置遊戲
+        function resetGame() {
+            playerScore = 0;
+            computerScore = 0;
+            document.getElementById('result').textContent = '';
+            document.getElementById('score').textContent = `你: 0 - 電腦: 0`;
+        }
+    </script>
+</body>
+</html>
