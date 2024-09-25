@@ -119,13 +119,16 @@
                 playerScore++;
                 winSound.play();
                 resultDiv.textContent = '你贏了！';
+                resultDiv.className = 'result win';;
             } else if (result === 'lose') {
                 computerScore++;
                 loseSound.play();
                 resultDiv.textContent = '你輸了！';
+                 resultDiv.className = 'result lose';
             } else {
                 drawSound.play();
                 resultDiv.textContent = '平手！';
+                 resultDiv.className = 'result win';
             }
 
             scoreDiv.textContent = `你: ${playerScore} - 電腦: ${computerScore}`;
